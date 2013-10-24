@@ -19,7 +19,7 @@ debemail = "release@yavdr.org"
 debfullname = "yavdr package builder"
 gpgkey = "5289F541"
 
-# do only process packages in include_packages
+# if not empty process only packages in include_packages
 include_packages = []
 # and never packages in exclude_packages
 exclude_packages = ["vdr"]
