@@ -1,11 +1,11 @@
 #!/usr/bin/python
+from __future__ import print_function
 import ConfigParser
 import argparse
 import subprocess
 import os
 import shutil
 import sys
-from __future__ import print_function
 from signal import signal, SIGPIPE, SIG_DFL
 from launchpadlib.launchpad import Launchpad
 
@@ -154,7 +154,7 @@ class Config:
         self.configparser.read(args["config"])
         self.get_config()
 
-    def get_setting(category, setting, default=None):
+    def get_setting(self, category, setting, default=None):
         if self.configparser.has_option(category, setting):
             return self.configparser.get(category, setting)
         else:
