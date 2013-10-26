@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding:utf-8 -*-
 from __future__ import print_function
 import ConfigParser
 import argparse
@@ -7,13 +8,14 @@ import subprocess
 import os
 import shutil
 import sys
+import urllib2
 from signal import signal, SIGPIPE, SIG_DFL
 from launchpadlib.launchpad import Launchpad
 from pprint import pprint
 
 
-def get_subdirs(dir):
-  return [name for name in os.listdir(dir) if os.path.isdir(name)]
+def get_subdirs(pdir):
+  return [name for name in os.listdir(pdir) if os.path.isdir(name)]
 
 
 def find_ppa(ppas, name):
@@ -68,7 +70,7 @@ def copy_packages(config):
                                                              status="Published")
     failed_sources = []
     for s in sources:
-      source_name = s.source_package_name
+      source_name = urllib2.unquote(s.source_package_name).decode("utf8")
       source_version = s.source_package_version
       if ((not config.include_packages or source_name in config.include_packages)
           and (not config.exclude_packages or not source_name in config.exclude_packages)):
@@ -78,9 +80,11 @@ def copy_packages(config):
         urls = s.sourceFileUrls()
         for u in urls:
           if u.endswith(".dsc"):
-            dir = source_name
-            if os.access(dir, os.F_OK):
-              print("{0} already exists, skipping {1}".format(dir, source_name),
+            u = urllib2.unquote(u).decode("utf8")
+            print(source_name)
+            pdir = source_name
+            if os.access(pdir, os.F_OK):
+              print("{0} already exists, skipping {1}".format(pdir, source_name),
                     file=sys.stderr)
               failed_sources.append(source_name)
               break
@@ -121,8 +125,8 @@ def copy_packages(config):
               print("new source_package_version:", new_version)
 
             print("")
-            os.mkdir(dir)
-            os.chdir(dir)
+            os.mkdir(pdir)
+            os.chdir(pdir)
             print("dget -xuq {0}".format(u))
             subprocess.call(["dget", "-xuq", u], env=os.environ)
             subdirs = get_subdirs(".")
@@ -154,7 +158,7 @@ def copy_packages(config):
                                 preexec_fn = lambda: signal(SIGPIPE, SIG_DFL),
                                 env=os.environ)
 
-              os.chdir(os.path.join(cwd, dir))
+              os.chdir(os.path.join(cwd, pdir))
               changes_file = "{0}_{1}_source.changes".format(
                                                        source_name, new_version)
               if (not os.access(changes_file, os.F_OK | os.R_OK) or 
@@ -173,9 +177,10 @@ def copy_packages(config):
 
             os.chdir(cwd)
             try:
-              shutil.rmtree(dir)
-            except:
-              print("can't remove directory {0}".format(dir), file=sys.stderr)
+              shutil.rmtree(pdir.encode('utf-8'))
+            except Exception as e:
+              print("can't remove directory {0}".format(pdir), file=sys.stderr)
+              print(e)
               failed_sources.append(source_name)
 
     if failed_sources:
