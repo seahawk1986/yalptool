@@ -172,7 +172,11 @@ def copy_packages(config):
                                 changes_file], env=os.environ)
 
             os.chdir(cwd)
-            shutil.rmtree(dir)
+            try:
+              shutil.rmtree(dir)
+            except:
+              print("can't remove directory {0}".format(dir), file=sys.stderr)
+              failed_sources.append(source_name)
 
     if failed_sources:
       print("there were failures on the following packages:")
