@@ -81,7 +81,6 @@ def copy_packages(config):
         for u in urls:
           if u.endswith(".dsc"):
             u = urllib2.unquote(u).decode("utf8")
-            print(source_name)
             pdir = source_name
             if os.access(pdir, os.F_OK):
               print("{0} already exists, skipping {1}".format(pdir, source_name),
