@@ -87,7 +87,7 @@ def copy_packages(config):
 
             new_version = source_version
             if config.increment_version:
-              pos = source_version.rindex("-")
+              pos = source_version.rfind("-")
               if pos < 0:
                 print("{0} has not the expected version number scheme, skipping {1}".format(
                       source_version,source_name), file=sys.stderr)
@@ -154,9 +154,13 @@ def copy_packages(config):
                                 preexec_fn = lambda: signal(SIGPIPE, SIG_DFL),
                                 env=os.environ)
 
+              changes_version = new_version
+              cpos = changes_version.find(":")
+              if cpos > 0 and cpos < len(changes_version):
+                changes_version = changes_version[cpos + 1:]
               os.chdir(os.path.join(cwd, dir))
               changes_file = "{0}_{1}_source.changes".format(
-                                                       source_name, new_version)
+                                                       source_name, changes_version)
               if (not os.access(changes_file, os.F_OK | os.R_OK) or 
                   not os.path.isfile(changes_file)):
                 print("can't find {0} for upload".format(changes_file),
