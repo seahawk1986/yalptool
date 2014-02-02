@@ -151,36 +151,39 @@ def copy_packages(config):
                   failed_sources.append(source_name)
                   break
                   
-                print("debuild -S -sa -k{0}".format(os.environ["GPGKEY"]))
-                subprocess.call(["debuild", "-S", "-sa", "-k{0}".format(
-                                                         os.environ["GPGKEY"])],
-                                preexec_fn = lambda: signal(SIGPIPE, SIG_DFL),
-                                env=os.environ)
+                if not config.download_only:
+                  print("debuild -S -sa -k{0}".format(os.environ["GPGKEY"]))
+                  subprocess.call(["debuild", "-S", "-sa", "-k{0}".format(
+                                                           os.environ["GPGKEY"])],
+                                  preexec_fn = lambda: signal(SIGPIPE, SIG_DFL),
+                                  env=os.environ)
 
-              changes_version = new_version
-              cpos = changes_version.find(":")
-              if cpos > 0 and cpos < len(changes_version):
-                changes_version = changes_version[cpos + 1:]
-              os.chdir(os.path.join(cwd, pdir))
-              changes_file = "{0}_{1}_source.changes".format(
-                                                       source_name, changes_version)
-              if (not os.access(changes_file, os.F_OK | os.R_OK) or 
-                  not os.path.isfile(changes_file)):
-                print("can't find {0} for upload".format(changes_file),
-                      file=sys.stderr)
-                failed_sources.append(source_name)
-              else:
-                print("dput -U ppa:{0}/{1} {2}".format(config.to_user_name,
-                                                        config.to_ppa_name,
-                                                        changes_file))
-                subprocess.call(["dput", "-U", "ppa:{0}/{1}".format(
-                                                            config.to_user_name,
-                                                            config.to_ppa_name),
-                                changes_file], env=os.environ)
+              if not config.download_only:
+                changes_version = new_version
+                cpos = changes_version.find(":")
+                if cpos > 0 and cpos < len(changes_version):
+                  changes_version = changes_version[cpos + 1:]
+                os.chdir(os.path.join(cwd, pdir))
+                changes_file = "{0}_{1}_source.changes".format(
+                                                         source_name, changes_version)
+                if (not os.access(changes_file, os.F_OK | os.R_OK) or 
+                    not os.path.isfile(changes_file)):
+                  print("can't find {0} for upload".format(changes_file),
+                        file=sys.stderr)
+                  failed_sources.append(source_name)
+                else:
+                  print("dput -U ppa:{0}/{1} {2}".format(config.to_user_name,
+                                                          config.to_ppa_name,
+                                                          changes_file))
+                  subprocess.call(["dput", "-U", "ppa:{0}/{1}".format(
+                                                              config.to_user_name,
+                                                              config.to_ppa_name),
+                                  changes_file], env=os.environ)
 
             os.chdir(cwd)
             try:
-              shutil.rmtree(pdir.encode('utf-8'))
+              if not config.download_only:
+                shutil.rmtree(pdir.encode('utf-8'))
             except Exception as e:
               print("can't remove directory {0}".format(pdir), file=sys.stderr)
               print(e)
@@ -228,6 +231,7 @@ class Config:
                                                              self.from_ppa_name)
         # Package Options
         self.increment_version = self.get_settingb("Options", "increment_version")
+        self.download_only = self.get_settingb("Options", "download_only")
         self.build_number_prefix = self.get_setting("Options", "build_number_prefix",
                                                "ubuntu")
         self.changelog_message = self.get_setting("Options", "changelog_message",
