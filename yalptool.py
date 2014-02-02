@@ -135,7 +135,7 @@ def copy_packages(config):
                                                      os.path.isfile(changelog)):
                 md5_pre = md5_for_file(changelog)
                 print(("dch --newversion {0} -u medium --distribution {1}"
-                       "--force-distribution \"{2}\"").format(new_version,
+                       " --force-distribution \"{2}\"").format(new_version,
                                                               config.to_series_name,
                                                               config.changelog_message)
                 )
