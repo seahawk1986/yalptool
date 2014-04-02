@@ -140,7 +140,7 @@ def copy_packages(config):
                   failed_sources.append(source_name)
                   break
 
-                build_number = str(int(source_version[pos2:pos3]) + 1)
+                build_number = str(int(source_version[pos2:pos3]) + int(config.increment_value))
                 new_version = source_version[:pos2] + build_number
                 if source_version.endswith("~" + config.from_series_name):
                   new_version = new_version + "~" + config.to_series_name
@@ -254,6 +254,7 @@ class Config:
                                                              self.from_ppa_name)
         # Package Options
         self.increment_version = self.get_settingb("Options", "increment_version")
+        self.increment_value = self.get_setting("Options", "increment_value", 1)
         self.download_only = self.get_settingb("Options", "download_only")
         self.build_number_prefix = self.get_setting("Options", "build_number_prefix",
                                                "ubuntu")
