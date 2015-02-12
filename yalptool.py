@@ -112,39 +112,41 @@ def copy_packages(config):
                 break
 
               new_version = source_version
-              if config.increment_version:
-                pos = source_version.rfind("-")
-                if pos < 0:
-                  print("{0} has not the expected version number scheme, skipping {1}".format(
-                        source_version,source_name), file=sys.stderr)
-                  failed_sources.append(source_name)
-                  break
+              pos = source_version.rfind("-")
+              if pos < 0:
+                print("{0} has not the expected version number scheme, skipping {1}".format(
+                      source_version,source_name), file=sys.stderr)
+                failed_sources.append(source_name)
+                break
 
-                pos2 = source_version.find(config.build_number_prefix, pos)
-                if pos2 < 0:
-                  print("{0} has not the expected version number scheme, skipping {1}".format(
-                        source_version, source_name), file=sys.stderr)
-                  failed_sources.append(source_name)
-                  break
+              pos2 = source_version.find(config.build_number_prefix, pos)
+              if pos2 < 0:
+                print("{0} has not the expected version number scheme, skipping {1}".format(
+                      source_version, source_name), file=sys.stderr)
+                failed_sources.append(source_name)
+                break
 
-                pos2 = pos2 + len(config.build_number_prefix)
-                pos3 = pos2 + 1
-                while pos3 < len(source_version):
-                  if not source_version[pos2:pos3].isdigit():
-                    pos3 = pos3 - 1
-                    break
-                  pos3 = pos3 + 1
+              pos2 = pos2 + len(config.build_number_prefix)
+              pos3 = pos2 + 1
+              while pos3 < len(source_version):
                 if not source_version[pos2:pos3].isdigit():
-                  print("{0} has not the expected version number scheme, skipping {1}".format(
-                        source_version, source_name), file=sys.stderr)
-                  failed_sources.append(source_name)
+                  pos3 = pos3 - 1
                   break
+                pos3 = pos3 + 1
+              if not source_version[pos2:pos3].isdigit():
+                print("{0} has not the expected version number scheme, skipping {1}".format(
+                      source_version, source_name), file=sys.stderr)
+                failed_sources.append(source_name)
+                break
 
+              if config.increment_version:
                 build_number = str(int(source_version[pos2:pos3]) + int(config.increment_value))
-                new_version = source_version[:pos2] + build_number
-                if source_version.endswith("~" + config.from_series_name):
-                  new_version = new_version + "~" + config.to_series_name
-                print("new source_package_version:", new_version)
+              else:
+                build_number = source_version[pos2:pos3]
+              new_version = source_version[:pos2] + build_number
+              if source_version.endswith("~" + config.from_series_name):
+                new_version = new_version + "~" + config.to_series_name
+              print("new source_package_version:", new_version)
 
               print("")
               os.mkdir(pdir)
