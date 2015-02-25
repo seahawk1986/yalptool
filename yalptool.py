@@ -154,6 +154,7 @@ def copy_packages(config):
                 else:
                   if config.increment_version:
                     new_prefix_number = str(int(source_version[pos+1:pos2]) + 1)
+                    build_number = "0"
                   else:
                     new_prefix_number = source_version[pos+1:pos2]
                   new_version = source_version[:pos+1] + new_prefix_number + config.to_build_number_prefix + build_number
