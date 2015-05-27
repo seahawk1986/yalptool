@@ -112,39 +112,57 @@ def copy_packages(config):
                 break
 
               new_version = source_version
+              pos = source_version.rfind("-")
+              if pos < 0:
+                print("{0} has not the expected version number scheme, skipping {1}".format(
+                      source_version,source_name), file=sys.stderr)
+                failed_sources.append(source_name)
+                break
+
+              pos2 = source_version.find(config.build_number_prefix, pos)
+              if pos2 < 0:
+                print("{0} has not the expected version number scheme, skipping {1}".format(
+                      source_version, source_name), file=sys.stderr)
+                failed_sources.append(source_name)
+                break
+
+              pos3 = pos2 + len(config.build_number_prefix)
+              pos4 = pos3 + 1
+              while pos4 < len(source_version):
+                if not source_version[pos3:pos4].isdigit():
+                  pos4 = pos4 - 1
+                  break
+                pos4 = pos4 + 1
+              if not source_version[pos3:pos4].isdigit():
+                print("{0} has not the expected version number scheme, skipping {1}".format(
+                      source_version, source_name), file=sys.stderr)
+                failed_sources.append(source_name)
+                break
+
               if config.increment_version:
-                pos = source_version.rfind("-")
-                if pos < 0:
-                  print("{0} has not the expected version number scheme, skipping {1}".format(
-                        source_version,source_name), file=sys.stderr)
-                  failed_sources.append(source_name)
-                  break
-
-                pos2 = source_version.find(config.build_number_prefix, pos)
-                if pos2 < 0:
+                build_number = str(int(source_version[pos3:pos4]) + int(config.increment_value))
+              else:
+                build_number = source_version[pos3:pos4]
+              # if the new build-number-prefix is lesser than the old, dch will fail
+              # so we increment the number right before the build-number-prefix
+              if config.to_build_number_prefix < config.build_number_prefix:
+                if not source_version[pos+1:pos2].isdigit():
                   print("{0} has not the expected version number scheme, skipping {1}".format(
                         source_version, source_name), file=sys.stderr)
                   failed_sources.append(source_name)
                   break
-
-                pos2 = pos2 + len(config.build_number_prefix)
-                pos3 = pos2 + 1
-                while pos3 < len(source_version):
-                  if not source_version[pos2:pos3].isdigit():
-                    pos3 = pos3 - 1
-                    break
-                  pos3 = pos3 + 1
-                if not source_version[pos2:pos3].isdigit():
-                  print("{0} has not the expected version number scheme, skipping {1}".format(
-                        source_version, source_name), file=sys.stderr)
-                  failed_sources.append(source_name)
-                  break
-
-                build_number = str(int(source_version[pos2:pos3]) + int(config.increment_value))
-                new_version = source_version[:pos2] + build_number
-                if source_version.endswith("~" + config.from_series_name):
-                  new_version = new_version + "~" + config.to_series_name
-                print("new source_package_version:", new_version)
+                else:
+                  if config.increment_version:
+                    new_prefix_number = str(int(source_version[pos+1:pos2]) + 1)
+                    build_number = "0"
+                  else:
+                    new_prefix_number = source_version[pos+1:pos2]
+                  new_version = source_version[:pos+1] + new_prefix_number + config.to_build_number_prefix + build_number
+              else:
+                new_version = source_version[:pos2] + config.to_build_number_prefix + build_number
+              if source_version.endswith("~" + config.from_series_name):
+                new_version = new_version + "~" + config.to_series_name
+              print("new source_package_version:", new_version)
 
               print("")
               os.mkdir(pdir)
@@ -157,12 +175,13 @@ def copy_packages(config):
                 if (os.access(changelog, os.F_OK | os.W_OK) and 
                                                        os.path.isfile(changelog)):
                   md5_pre = md5_for_file(changelog)
-                  print(("dch --newversion {0} -u medium --distribution {1}"
+                  print(("dch --force-bad-version --newversion {0} -u medium --distribution {1}"
                          " --force-distribution \"{2}\"").format(new_version,
                                                                 config.to_series_name,
                                                                 config.changelog_message)
                   )
-                  subprocess.call(["dch", "--newversion", new_version,
+                  subprocess.call(["dch", "--force-bad-version",
+                                  "--newversion", new_version,
                                   "-u", "medium",
                                   "--distribution", config.to_series_name,
                                   "--force-distribution", config.changelog_message],
@@ -258,6 +277,8 @@ class Config:
         self.download_only = self.get_settingb("Options", "download_only")
         self.build_number_prefix = self.get_setting("Options", "build_number_prefix",
                                                "ubuntu")
+        self.to_build_number_prefix = self.get_setting("Options", "to_build_number_prefix",
+                                               self.build_number_prefix)
         self.changelog_message = self.get_setting("Options", "changelog_message",
                                                "automatic rebuild")
         # if not empty process only packages in include_packages
