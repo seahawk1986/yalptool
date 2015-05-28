@@ -1,0 +1,115 @@
+YALPTOOL(1)
+===========
+:doctype: manpage
+
+
+NAME
+----
+yalptool - copy and rebuild packages for PPAs on launchpad.net
+
+
+SYNOPSIS
+--------
+yalptoolc ['OPTIONS']
+
+
+DESCRIPTION
+-----------
+The yalptool(1) script downloads, copies or rebuilds Packages from PPAs on Launchpad.
+
+
+OPTIONS
+-------
+*-c, --config*='CONFIG'::
+    Use configuration file 'CONFIG'. See <<X1, CONFIGURATION>>.
+*-h, --help*::
+    Print short usage notes.
+
+[[X1]]
+CONFIGURATION
+---------------
+See example file launchpad.conf
+
+Where:
+
+*[Launchpad]*::
+  settings for source- and target PPA
+
+*from_user_name* = <username>::
+  launchpad owner of source PPA
+*from_series_name* = <release>::
+  ubuntu release to fetch packages from, e.g. precise, trusty, utopic ...
+*from_ppa_name* = <ppa_name>::
+  name of source PPA
+
+*to_user_name* = <username>::
+  launchpad owner of target PPA
+*to_series_name* = <release>::
+  ubuntu release to build packages for, e.g. precise, trusty, utopic
+  ...
+*to_ppa_name* = <ppa_name>::
+  name of target PPA
+
+*[Options]*::
+  settings for processing packages
+*increment_version* = [True|False]::
+  use False for copy to different PPA
+*increment_value* = <number>::
+  increase buildd-number by <number>. Use 1 for normal rebuilds, increase by 2 to recover from interrupted copies
+*download_only* = [True|False]::
+  use True to just download the source, do not upload anything
+*build_number_prefix* = <build_number_prefix>::
+  expect: <upstream-version>-<package-number><build_number_prefix><build-number>~<series>
+  example: 2.0.3-3yavdr0~precise
+*to_build_number_prefix* = <build_number_prefix>::
+  change the build-number-prefix
+  defaults to build_number_prefix if omitted
+
+*changelog_message* = <message>::
+  set a message for the changelog file
+*only_newer* = [True|False]::
+  copy only newer packages
+
+*include_packages* = [package1 package2 ..]::
+  if not empty process only packages in include_packages (seperate packages with spaces)
+*exclude_packages* = [package1 package2 ..]::
+  and never process packages in exclude_packages (seperate packages with spaces)
+
+*[Maintainer]*::
+  settings for own launchpad account
+*debemail* = <DEBMAIL>::
+  DEBMAIL address
+*debfullname* = <DEBFULLNAME>
+  full name to appear in changelog and signature
+*gpgkey* = <KEY>
+  GPG-KEY to use when signing packages
+
+EXIT STATUS
+-----------
+0::
+    Success
+
+1::
+    Failure (syntax or usage error; configuration error; package
+    processing failure; unexpected error).
+
+BUGS
+----
+If you find any bugs, please contact the author.
+
+
+AUTHOR
+------
+yalptool was written by Lars Hanisch and Alexander Grothe
+
+
+RESOURCES
+---------
+GitHub project page: <https://github.com/flensrocker/yalptool>
+
+
+COPYING
+-------
+Copyright \(C) 2013-2015 Lars Hanisch. Free use of this software is
+granted under the terms of the GNU General Public License (GPL).
+

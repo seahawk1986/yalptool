@@ -1,0 +1,177 @@
+'\" t
+.\"     Title: yalptool
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 05/28/2015
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "YALPTOOL" "1" "05/28/2015" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+yalptool \- copy and rebuild packages for PPAs on launchpad\&.net
+.SH "SYNOPSIS"
+.sp
+yalptoolc [\fIOPTIONS\fR]
+.SH "DESCRIPTION"
+.sp
+The yalptool(1) script downloads, copies or rebuilds Packages from PPAs on Launchpad\&.
+.SH "OPTIONS"
+.PP
+\fB\-c, \-\-config\fR=\fICONFIG\fR
+.RS 4
+Use configuration file
+\fICONFIG\fR\&. See
+CONFIGURATION\&.
+.RE
+.PP
+\fB\-h, \-\-help\fR
+.RS 4
+Print short usage notes\&.
+.RE
+.SH "CONFIGURATION"
+.sp
+See example file launchpad\&.conf
+.sp
+Where:
+.PP
+\fB[Launchpad]\fR
+.RS 4
+settings for source\- and target PPA
+.RE
+.PP
+\fBfrom_user_name\fR = <username>
+.RS 4
+launchpad owner of source PPA
+.RE
+.PP
+\fBfrom_series_name\fR = <release>
+.RS 4
+ubuntu release to fetch packages from, e\&.g\&. precise, trusty, utopic \&...
+.RE
+.PP
+\fBfrom_ppa_name\fR = <ppa_name>
+.RS 4
+name of source PPA
+.RE
+.PP
+\fBto_user_name\fR = <username>
+.RS 4
+launchpad owner of target PPA
+.RE
+.PP
+\fBto_series_name\fR = <release>
+.RS 4
+ubuntu release to build packages for, e\&.g\&. precise, trusty, utopic \&...
+.RE
+.PP
+\fBto_ppa_name\fR = <ppa_name>
+.RS 4
+name of target PPA
+.RE
+.PP
+\fB[Options]\fR
+.RS 4
+settings for processing packages
+.RE
+.PP
+\fBincrement_version\fR = [True|False]
+.RS 4
+use False for copy to different PPA
+.RE
+.PP
+\fBincrement_value\fR = <number>
+.RS 4
+increase buildd\-number by <number>\&. Use 1 for normal rebuilds, increase by 2 to recover from interrupted copies
+.RE
+.PP
+\fBdownload_only\fR = [True|False]
+.RS 4
+use True to just download the source, do not upload anything
+.RE
+.PP
+\fBbuild_number_prefix\fR = <build_number_prefix>
+.RS 4
+expect: <upstream\-version>\-<package\-number><build_number_prefix><build\-number><series> example: 2\&.0\&.3\-3yavdr0precise
+.RE
+.PP
+\fBto_build_number_prefix\fR = <build_number_prefix>
+.RS 4
+change the build\-number\-prefix defaults to build_number_prefix if omitted
+.RE
+.PP
+\fBchangelog_message\fR = <message>
+.RS 4
+set a message for the changelog file
+.RE
+.PP
+\fBonly_newer\fR = [True|False]
+.RS 4
+copy only newer packages
+.RE
+.PP
+\fBinclude_packages\fR = [package1 package2 \&.\&.]
+.RS 4
+if not empty process only packages in include_packages (seperate packages with spaces)
+.RE
+.PP
+\fBexclude_packages\fR = [package1 package2 \&.\&.]
+.RS 4
+and never process packages in exclude_packages (seperate packages with spaces)
+.RE
+.PP
+\fB[Maintainer]\fR
+.RS 4
+settings for own launchpad account
+.RE
+.PP
+\fBdebemail\fR = <DEBMAIL>
+.RS 4
+DEBMAIL address
+\fBdebfullname\fR
+= <DEBFULLNAME> full name to appear in changelog and signature
+\fBgpgkey\fR
+= <KEY> GPG\-KEY to use when signing packages
+.RE
+.SH "EXIT STATUS"
+.PP
+0
+.RS 4
+Success
+.RE
+.PP
+1
+.RS 4
+Failure (syntax or usage error; configuration error; package processing failure; unexpected error)\&.
+.RE
+.SH "BUGS"
+.sp
+If you find any bugs, please contact the author\&.
+.SH "AUTHOR"
+.sp
+yalptool was written by Lars Hanisch and Alexander Grothe
+.SH "RESOURCES"
+.sp
+GitHub project page: https://github\&.com/flensrocker/yalptool
+.SH "COPYING"
+.sp
+Copyright (C) 2013\-2015 Lars Hanisch\&. Free use of this software is granted under the terms of the GNU General Public License (GPL)\&.
