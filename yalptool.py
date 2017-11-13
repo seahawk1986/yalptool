@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-from __future__ import print_function
-import ConfigParser
+
+import configparser
 import apt
 import argparse
 import hashlib
@@ -9,7 +9,7 @@ import subprocess
 import os
 import shutil
 import sys
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from signal import signal, SIGPIPE, SIG_DFL
 from launchpadlib.launchpad import Launchpad
 from pprint import pprint
@@ -27,7 +27,7 @@ def find_ppa(ppas, name):
 
 def find_source(sources, name):
   for s in sources:
-    s_name = urllib2.unquote(s.source_package_name).decode("utf8")
+    s_name = urllib.parse.unquote(s.source_package_name).decode("utf8")
     if s_name == name:
       return s
   return None
@@ -80,7 +80,7 @@ def copy_packages(config):
                                                              status="Published")
     failed_sources = []
     for s in from_sources:
-      source_name = urllib2.unquote(s.source_package_name).decode("utf8")
+      source_name = urllib.parse.unquote(s.source_package_name).decode("utf8")
       source_version = s.source_package_version
       if ((not config.include_packages or source_name in config.include_packages)
           and (not config.exclude_packages or not source_name in config.exclude_packages)):
@@ -103,7 +103,7 @@ def copy_packages(config):
           urls = s.sourceFileUrls()
           for u in urls:
             if u.endswith(".dsc"):
-              u = urllib2.unquote(u).decode("utf8")
+              u = urllib.parse.unquote(u).decode("utf8")
               pdir = source_name
               if os.access(pdir, os.F_OK):
                 print("{0} already exists, skipping {1}".format(pdir, source_name),
@@ -244,7 +244,7 @@ class Config:
                                dest='config', action='append', default=None, 
                                help='config file(s)')
         args = vars(argparser.parse_args())
-        self.configparser = ConfigParser.SafeConfigParser()
+        self.configparser = configparser.SafeConfigParser()
         self.configparser.read(args["config"])
         self.get_config()
 
