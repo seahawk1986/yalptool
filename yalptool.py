@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 
 import configparser
@@ -27,7 +27,7 @@ def find_ppa(ppas, name):
 
 def find_source(sources, name):
   for s in sources:
-    s_name = urllib.parse.unquote(s.source_package_name).decode("utf8")
+    s_name = urllib.parse.unquote(s.source_package_name)
     if s_name == name:
       return s
   return None
@@ -40,7 +40,7 @@ def md5_for_file(filename):
     data = f.read(128)
     if not data:
       break
-    md5.update(data)
+    md5.update(data.encode('utf-8'))
   return md5.digest()
 
 
@@ -80,7 +80,7 @@ def copy_packages(config):
                                                              status="Published")
     failed_sources = []
     for s in from_sources:
-      source_name = urllib.parse.unquote(s.source_package_name).decode("utf8")
+      source_name = urllib.parse.unquote(s.source_package_name)
       source_version = s.source_package_version
       if ((not config.include_packages or source_name in config.include_packages)
           and (not config.exclude_packages or not source_name in config.exclude_packages)):
@@ -103,7 +103,7 @@ def copy_packages(config):
           urls = s.sourceFileUrls()
           for u in urls:
             if u.endswith(".dsc"):
-              u = urllib.parse.unquote(u).decode("utf8")
+              u = urllib.parse.unquote(u)
               pdir = source_name
               if os.access(pdir, os.F_OK):
                 print("{0} already exists, skipping {1}".format(pdir, source_name),
@@ -194,8 +194,8 @@ def copy_packages(config):
                     break
                     
                   if not config.download_only:
-                    print("debuild -S -sa -k{0}".format(os.environ["GPGKEY"]))
-                    subprocess.call(["debuild", "-S", "-sa", "-k{0}".format(
+                    print("debuild -d -S -sa -k{0}".format(os.environ["GPGKEY"]))
+                    subprocess.call(["debuild", "-d", "-S", "-sa", "-k{0}".format(
                                                              os.environ["GPGKEY"])],
                                     preexec_fn = lambda: signal(SIGPIPE, SIG_DFL),
                                     env=os.environ)
