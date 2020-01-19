@@ -1,0 +1,2 @@
+#!/usr/bin/dh-exec
+yalptool.py => /usr/bin/yalptool
