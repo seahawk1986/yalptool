@@ -244,7 +244,7 @@ class Config:
                                dest='config', action='append', default=None, 
                                help='config file(s)')
         args = vars(argparser.parse_args())
-        self.configparser = configparser.SafeConfigParser()
+        self.configparser = configparser.ConfigParser()
         self.configparser.read(args["config"])
         self.get_config()
 
