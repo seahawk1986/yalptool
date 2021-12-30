@@ -1,3 +1,9 @@
+yalptool (0.0.2-0yavdr0~focal) focal; urgency=medium
+
+  * Change from SafeConfigParser to it's Python3 equivalent ConfigParser 
+
+ -- Alexander Grothe <seahawk1986@gmx.de>  Thu, 30 Dec 2021 14:32:45 +0100
+
 yalptool (0.0.1-0yavdr0~focal) focal; urgency=medium
 
   * Initial package release
