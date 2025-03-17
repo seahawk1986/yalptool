@@ -168,7 +168,7 @@ def copy_packages(config):
               os.mkdir(pdir)
               os.chdir(pdir)
               print("dget -xuq {0}".format(u))
-              subprocess.call(["dget", "-xuq", u], env=os.environ)
+              subprocess.check_call(["dget", "-xuq", u], env=os.environ)
               subdirs = get_subdirs(".")
               for subdir in subdirs:
                 os.chdir(subdir)
@@ -180,7 +180,7 @@ def copy_packages(config):
                                                                 config.to_series_name,
                                                                 config.changelog_message)
                   )
-                  subprocess.call(["dch", "--force-bad-version",
+                  subprocess.check_call(["dch", "--force-bad-version",
                                   "--newversion", new_version,
                                   "-u", "medium",
                                   "--distribution", config.to_series_name,
@@ -195,7 +195,7 @@ def copy_packages(config):
                     
                   if not config.download_only:
                     print("debuild -d -S -sa -k{0}".format(os.environ["GPGKEY"]))
-                    subprocess.call(["debuild", "-d", "-S", "-sa", "-k{0}".format(
+                    subprocess.check_call(["debuild", "-d", "-S", "-sa", "-k{0}".format(
                                                              os.environ["GPGKEY"])],
                                     preexec_fn = lambda: signal(SIGPIPE, SIG_DFL),
                                     env=os.environ)
@@ -217,7 +217,7 @@ def copy_packages(config):
                     print("dput -U ppa:{0}/{1} {2}".format(config.to_user_name,
                                                             config.to_ppa_name,
                                                             changes_file))
-                    subprocess.call(["dput", "-U", "ppa:{0}/{1}".format(
+                    subprocess.check_call(["dput", "-U", "ppa:{0}/{1}".format(
                                                                 config.to_user_name,
                                                                 config.to_ppa_name),
                                     changes_file], env=os.environ)
